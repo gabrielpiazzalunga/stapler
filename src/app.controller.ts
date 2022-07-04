@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, StreamableFile } from '@nestjs/common';
+import { createReadStream } from 'fs';
 import { AppService } from './app.service';
 //import Docxtemplater from 'docxtemplater';
 //import {PizZip} from "pizzip";
@@ -7,7 +8,8 @@ import { ReplaceOptions } from './ReplaceOptions';
 
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
-
+const libre = require('libreoffice-convert');
+libre.convertAsync = require('util').promisify(libre.convert);
 const fs = require("fs");
 const path = require("path");
 
@@ -15,7 +17,7 @@ const path = require("path");
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService, private readonly ruleService) {}
 
   @Get()
   getHello(): string {
@@ -23,7 +25,14 @@ export class AppController {
   }
 
   @Post("/replaceVariables")
-  replaceVariables(@Body() replaceOptions: ReplaceOptions): any {
+  async replaceVariables(@Body() replaceOptions: ReplaceOptions): Promise<any> {
+    
+    let templateIds = this.ruleService.getTemplates(replaceOptions.replaceVariables);
+
+    //1 - get template based on rules
+    //2 - get from S3
+    //3 - replace -> ok
+    //4 - convert -> +/-
     try {
       const content = fs.readFileSync(
         path.resolve(__dirname, "../tag-example.docx"),
@@ -36,9 +45,9 @@ export class AppController {
           paragraphLoop: true,
           linebreaks: true,
           parser: staplerParser,
+          nullGetter: () => {return '';},
       });
       
-
       doc.render(replaceOptions.replaceVariables);
       
       const buf = doc.getZip().generate({
@@ -50,7 +59,14 @@ export class AppController {
       
       // buf is a nodejs Buffer, you can either write it to a
       // file or res.send it with express for example.
+      const pdfBuf = await libre.convertAsync(buf, '.pdf', undefined);
+
+      fs.writeFileSync(path.resolve(__dirname, "../outputConverted.pdf"), pdfBuf);
+
       fs.writeFileSync(path.resolve(__dirname, "../output.docx"), buf);
+      return true;
+      // const file = createReadStream(buf);
+      // return new StreamableFile(file);
     } catch (error) {
       throw error;
     }

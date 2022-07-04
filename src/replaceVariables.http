@@ -1,0 +1,13 @@
+POST http://localhost:3000/replaceVariables
+Content-Type: application/json
+
+{
+    "outputFormat":"PDF",
+    "documentAddress":"asjbas",
+    "replaceVariables": {
+        "test":"CavaLo",
+        "first_name":"picles",
+        "testList":[{"key":"value", "variable":"fbajba"}, {"key":"value2", "variable":"lmfao"}]
+    }
+
+}
