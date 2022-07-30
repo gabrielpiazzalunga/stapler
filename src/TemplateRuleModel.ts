@@ -5,7 +5,7 @@ export class Rule {
     comparisonOperator: ComparisonOperator;
     value: any;
     nullableCheck: boolean;
-    rules: Rule[];
+    rule: Rule;
 }
 
 export class RuleTemplate {

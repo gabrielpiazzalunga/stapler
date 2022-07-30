@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 //import {PizZip} from "pizzip";
 import { staplerParser } from './parser';
 import { ReplaceOptions } from './ReplaceOptions';
+import { RuleService } from './rule.service ';
 
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
@@ -17,7 +18,9 @@ const path = require("path");
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly ruleService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly ruleService: RuleService) {}
 
   @Get()
   getHello(): string {

@@ -1,51 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { ComparisonOperator, LogicOperator, Rule, RuleTemplate } from './TemplateRuleModel';
+var expressions = require("angular-expressions");
 
 @Injectable()
 export class RuleService {
   getTemplates(variables: Map<string,string> ): string[] {
 
-    //let ruleTemplate = new RuleTemplate();
-    // let motor = {
-    //   rule: {
-    //     logicOperator: 'OR',
-    //     rules: [
-    //       {
-    //       logicOperator: null,
-    //       propertyName: 'test',
-    //       comparisonOperator: 'equal',
-    //       value: 'cavalo',
-    //       nullableCheck: false,
-    //       rules: null,
-    //       },
-    //       {
-    //         logicOperator: null,
-    //         propertyName: 'first_name',
-    //         comparisonOperator: 'equal',
-    //         value: 'picles',
-    //         nullableCheck: false,
-    //         rules: null
-    //       }
-    //   ]
-    //   },
-    //   templateIds: ['123'],
-    // };
 
-    let ruleTemplate = new RuleTemplate();
-    ruleTemplate.templateIds = ['1'];
-    ruleTemplate.rule = new Rule();
-    ruleTemplate.rule.logicOperator = LogicOperator.Non;
-    ruleTemplate.rule.propertyName = 'test';
-    ruleTemplate.rule.comparisonOperator = ComparisonOperator.equal;
-    ruleTemplate.rule.value = 'picles';
-    ruleTemplate.rule.nullableCheck = true;
-
-    if (ruleTemplate.rule.logicOperator == LogicOperator.Non)
-    {
-
+    let received = {rule: "teste == 'cavalo'",
+                    template: "template1"};
+    let expr = expressions.compile(received.rule);
+    let templateList = [];
+    if( expr(variables)){
+      templateList.push(received.template);
     }
-    //for (let rule of motor.rule)
 
-    return ['1','2'];
+    return templateList; 
   }
+
+  // compare(variables: Map<string,string>, rule: Rule) : boolean {
+  //   let result = false;
+    
+  //   if (rule.rule){
+  //     result = this.compare(variables, rule.rule);
+  //   }
+
+  //   return result;
+  // }
 }
+
