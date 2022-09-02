@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { ReplaceOptions } from './ReplaceOptions';
+import { RuleExpression } from './RuleExpression';
 import { ComparisonOperator, LogicOperator, Rule, RuleTemplate } from './TemplateRuleModel';
 var expressions = require("angular-expressions");
 
 @Injectable()
 export class RuleService {
-  getTemplates(variables: Map<string,string> ): string[] {
+  getTemplates(replaceObj: ReplaceOptions ): string[] {
 
 
-    let received = {rule: "teste == 'cavalo'",
-                    template: "template1"};
-    let expr = expressions.compile(received.rule);
+    let rules = this.getRules(replaceObj.ruleGroup);
+
+    
+    let expr = expressions.compile(rules.rule);
     let templateList = [];
-    if( expr(variables)){
-      templateList.push(received.template);
+    if( expr(replaceObj.replaceVariables)){
+      templateList.push(rules.templateIds);
     }
 
     return templateList; 
@@ -27,5 +30,13 @@ export class RuleService {
 
   //   return result;
   // }
+
+  getRules(group: string): RuleExpression {
+    //TO DO: Get from DynamoDB
+    let rule = new RuleExpression();
+    rule.rule = "teste == 'cavalo'";
+    rule.templateIds = ["template1"];
+    return rule;
+  }
 }
 

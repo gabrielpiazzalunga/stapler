@@ -4,6 +4,7 @@ enum DocumentFormat{
 }
 
 export class ReplaceOptions {
+    ruleGroup: string;
     outputFormat: DocumentFormat;
     documentAddress: string;
     documentBase64: string;

@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { staplerParser } from './parser';
 import { ReplaceOptions } from './ReplaceOptions';
 import { RuleService } from './rule.service ';
+import { S3Service } from './s3.service ';
 
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
@@ -20,7 +21,8 @@ const path = require("path");
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly ruleService: RuleService) {}
+    private readonly ruleService: RuleService,
+    private readonly s3Service: S3Service) {}
 
   @Get()
   getHello(): string {
@@ -30,12 +32,19 @@ export class AppController {
   @Post("/replaceVariables")
   async replaceVariables(@Body() replaceOptions: ReplaceOptions): Promise<any> {
     
-    let templateIds = this.ruleService.getTemplates(replaceOptions.replaceVariables);
-
+    /**
+     * The process should be optionally async -> send to an email
+     */
     //1 - get template based on rules
     //2 - get from S3
     //3 - replace -> ok
     //4 - convert -> +/-
+    
+    //1 - get template based on rules
+    let templateIds = this.ruleService.getTemplates(replaceOptions);
+
+    //2 - get from S3
+    let doc = this.s3Service.getDocument(templateIds[0]);
     try {
       const content = fs.readFileSync(
         path.resolve(__dirname, "../tag-example.docx"),
