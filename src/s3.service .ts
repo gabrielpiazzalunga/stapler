@@ -25,6 +25,7 @@ export class S3Service {
  
     //res.attachment(fileKey);
     var {Body} = await s3.getObject(options).promise();
+    var content = await s3.getObject(options).createReadStream();
     //.createReadStream();
     return Body;
   }

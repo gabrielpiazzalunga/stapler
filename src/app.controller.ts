@@ -20,31 +20,36 @@ const path = require("path");
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
+    //private readonly appService: AppService,
     private readonly ruleService: RuleService,
     private readonly s3Service: S3Service) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
 
   @Post("/replaceVariables")
   async replaceVariables(@Body() replaceOptions: ReplaceOptions): Promise<any> {
     
     /**
-     * The process should be optionally async -> send to an email
+     * The process should be async -> send to an email
+     * create endpoint to create/update/delete rules
+     * create endpoint to subscribe to events on a template (webhook, email, sns, sqs, etc)
+     * create csv import model
+     * create separate service to handle subscriptions
+     * create frontend that detects parameters and allos to fill on the screen
+     * 
      */
     //1 - get template based on rules
     //2 - get from S3
     //3 - replace -> ok
     //4 - convert -> +/-
+    //5 - send to email or upload to s3 and return the link
     
     //1 - get template based on rules
     let templateIds = this.ruleService.getTemplates(replaceOptions);
 
     //2 - get from S3
     let doc = this.s3Service.getDocument(templateIds[0]);
+
+    //3- replace
     try {
       const content = fs.readFileSync(
         path.resolve(__dirname, "../tag-example.docx"),
